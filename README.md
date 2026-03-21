@@ -1,14 +1,16 @@
 # LPM (Linux Package Manager)
 
 LPM (Linux Package Maker) est un utilitaire permettant de distribuer des applications Linux.
-LPM utilise un fichier de configuration répertoriant les métadonnées de l'application (Nom, Description, Icône, ...)
-et ainsi que les fichiers de l'application
+LPM utilise un fichier de configuration répertoriant les métadonnées de l'application (Nom, Description, Icône, ...) ainsi que les fichiers de l'application.
 LPM compresse toutes ces données en un unique fichier exécutable qui installe automatiquement l'application à son lancement.
 Ce fichier est généré avec une extension .lpk (Linux Package), mais reste un simple fichier binaire exécutable
-Les applications sont installées localement à chaque utilisateur, et sont stockées dans le dossier ~/.local/opt/nom de l'application
+Les applications sont installées localement à chaque utilisateur, et sont stockées dans le dossier ~/.local/opt/<nom de l'application>
 LPM ajoute automatiquement l'application à la liste des applications système, et crée également une pseudo-application appelée Uninstall <nom de l'application> et qui permet de désinstaller proprement l'application
 
-Voici les champs que LPM permet de spécifier pour une application :
+## Linux Package Maker expose la commande `lpm` qui prend en argument un chemin vers un fichier YAML contenant les informations nécessaires à la fabrication du paquet telles que le nom de l'application, le fichier exécutable principal, le dossier contenant toutes les données de l'application, etc.
+
+
+Voici les champs que l'on peut spécifier dans le fichier YAML :
 
 ## Champs obligatoires :
 - AppName: Nom de l'application
