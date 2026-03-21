@@ -7,6 +7,14 @@ Ce fichier est généré avec une extension .lpk (Linux Package), mais reste un 
 Les applications sont installées localement à chaque utilisateur, et sont stockées dans le dossier ~/.local/opt/<nom de l'application>
 LPM ajoute automatiquement l'application à la liste des applications système, et crée également une pseudo-application appelée Uninstall <nom de l'application> et qui permet de désinstaller proprement l'application
 
+## Comment installer LPM
+
+LPM est distribué grâce à LPM, c'est-à-dire en fichier .lpk
+
+Pour l'installer, il suffit de télécharger LPM_installer.lpk dans les releases, puis de l'exécuter.
+
+Tout le reste est automatique.
+
 ## Comment utiliser LPM
 
 Linux Package Maker expose la commande `lpm` qui prend en argument un chemin vers un fichier YAML contenant les informations nécessaires à la fabrication du paquet telles que le nom de l'application, le fichier exécutable principal, le dossier contenant toutes les données de l'application, etc.
