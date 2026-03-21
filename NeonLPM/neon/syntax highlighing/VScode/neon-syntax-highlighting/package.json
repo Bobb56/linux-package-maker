@@ -1,0 +1,37 @@
+{
+  "name": "neon-syntax-highlighting",
+  "icon": "icon.png",
+  "publisher": "Raphaël",
+  "displayName": "Neon syntax highlighting",
+  "description": "Simple syntax highlighting for Neon language",
+  "repository": "https://github.com/Bobb56/neon",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "version": "0.0.1",
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "neon",
+        "aliases": [
+          "Neon",
+          "neon"
+        ],
+        "extensions": [
+          ".ne"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "neon",
+        "scopeName": "source.neon",
+        "path": "./syntaxes/neon.tmLanguage.json"
+      }
+    ]
+  }
+}

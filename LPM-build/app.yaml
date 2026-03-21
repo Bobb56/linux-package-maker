@@ -1,0 +1,8 @@
+AppName: LPM
+AppDirectory: LPM
+Launcher: LPM.sh
+ShortDescription: Linux Package Maker
+Description: Package maker for any Linux apps
+Terminal: false
+Category: Development
+Command: lpm
