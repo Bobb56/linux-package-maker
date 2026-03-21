@@ -119,15 +119,16 @@ def make_header(name, args):
 
 def make_extractor_strings(config):
     EXTRACTED_ARCHIVE_NAME = ".archive.tar"
-    EXTRACTOR_PATH = LPM_EXTRACTING_DIR + '/' + EXTRACTOR_SCRIPT_NAME
+    EXTRACTING_LIBNEON_PATH = LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'neon'
+    LAUNCH_EXTRACTOR = EXTRACTING_LIBNEON_PATH + ' ' + LPM_EXTRACTING_DIR + '/' + EXTRACTOR_SCRIPT_NAME
 
     return {
-        "EXTRACTING_LIBNEON_PATH"          : LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'libneon.so',
-        "LIBNEON_PATH"          : INSTALL_DIRECTORY + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/libneon.so',
-        "EXTRACTOR_PATH"        : EXTRACTOR_PATH,
-        "EXTRACTED_ARCHIVE_NAME": EXTRACTED_ARCHIVE_NAME,
-        "EXTRACTING_COMMAND"    : f"tar -xf {EXTRACTED_ARCHIVE_NAME}",
-        "UNINSTALLER_PATH"      : INSTALL_DIRECTORY + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME
+        "EXTRACTING_LIBNEON_PATH"   : EXTRACTING_LIBNEON_PATH,
+        "LIBNEON_PATH"              : INSTALL_DIRECTORY + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/neon',
+        "LAUNCH_EXTRACTOR"          : LAUNCH_EXTRACTOR,
+        "EXTRACTED_ARCHIVE_NAME"    : EXTRACTED_ARCHIVE_NAME,
+        "EXTRACTING_COMMAND"        : f"tar -xf {EXTRACTED_ARCHIVE_NAME}",
+        "UNINSTALLER_PATH"          : INSTALL_DIRECTORY + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME
     }
 
 
@@ -155,7 +156,7 @@ def load_config(config_file):
         "Category" : None,
         "InstFileName" : config[APP_NAME] + "_installer",
         "CompressionMode" : "xz",
-        "DesktopIcon" : False,
+        "DesktopIcon" : None,
         "Command" : None
     }
 
@@ -210,7 +211,7 @@ def build_noparams(config_file):
     make_header(HEADER_FILE_NAME, make_extractor_strings(config))
 
     # Ajout des fichiers source au dossier temporaire de travail de LPM
-    copy_to_temp_dir(MAIN_C_FILE, "libneon.so", EXTRACTOR_SCRIPT_NAME, UNINSTALLER_SCRIPT_NAME, UNINSTALLER_BINARY_C_FILE)
+    copy_to_temp_dir(MAIN_C_FILE, "neon", EXTRACTOR_SCRIPT_NAME, UNINSTALLER_SCRIPT_NAME)
 
     # Création du dossier temporaire de travail de l'extracteur
     create_folder(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR);
@@ -228,7 +229,7 @@ def build_noparams(config_file):
     create_folder(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY)
 
     # Ajoute la bibliothèque dynamique Neon
-    shutil.copyfile(LPM_TEMP_DIR + '/' + "libneon.so", LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'libneon.so')
+    shutil.copyfile(LPM_TEMP_DIR + '/' + "neon", LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'neon')
 
     # Ajoute l'icône
     if config[ICON]:
@@ -236,9 +237,6 @@ def build_noparams(config_file):
 
     # Ajoute le désinstallateur
     shutil.copyfile(LPM_TEMP_DIR + '/' + UNINSTALLER_SCRIPT_NAME, LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME)
-
-    # Compilation du binaire de lancement de la désinstallation
-    os.system(f"gcc -g {LPM_TEMP_DIR}/{UNINSTALLER_BINARY_C_FILE} -o {LPM_TEMP_DIR}/{LPM_EXTRACTING_DIR}/{config[APP_NAME]}/{LPM_DATA_DIRECTORY}/{UNINSTALLER_BINARY_LAUNCHER}")
 
     # Compression de l'archive complète
     compress_directory(config, config[COMPRESSION_MODE])

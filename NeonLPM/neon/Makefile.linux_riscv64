@@ -1,11 +1,10 @@
 # Nom de l'exécutable final
 TARGET1 = bin/neon
-TARGET2 = bin/libneon.so
 
 # Compilateur et options
 CC = riscv64-linux-gnu-gcc
 ASM = riscv64-linux-gnu-gcc
-CFLAGS = -fPIC -O3 -fno-fast-math -ftrapping-math -fsigned-zeros -frounding-math -g # -pg -fsanitize=address
+CFLAGS = -O3 -fno-fast-math -ftrapping-math -fsigned-zeros -frounding-math -g # -pg -fsanitize=address
 LDFLAGS = -lm -g # Flags de linkage
 ASMFLAGS = -g
 
@@ -18,15 +17,12 @@ ASM_src = src/linux_riscv64.S
 ASM_OBJECTS = $(patsubst src/%.S,obj/%.o,$(ASM_src))
 
 # Règle par défaut
-all: $(TARGET1) $(TARGET2)
+all: $(TARGET1)
 	mkdir obj obj/assets obj/extern
 
 # Compilation de l'exécutable
 $(TARGET1): $(C_OBJECTS) $(ASM_OBJECTS)
 	$(CC) $(C_OBJECTS) $(ASM_OBJECTS) $(LDFLAGS) -o $(TARGET1)
-
-$(TARGET2): $(C_OBJECTS) $(ASM_OBJECTS)
-	$(CC) $(C_OBJECTS) $(ASM_OBJECTS) $(LDFLAGS) -shared -o $(TARGET1)
 
 # Compilation des fichiers objets
 obj/%.o: src/%.c

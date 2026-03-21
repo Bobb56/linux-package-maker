@@ -29,6 +29,8 @@ NeonEnv* global_env = NULL;
 
 
 #ifdef LINUX
+    #include <nvdialog/nvdialog.h>
+
     #include <signal.h>
 
     void handle_signal(int sig) {
@@ -140,7 +142,10 @@ void loadFunctions(NeonEnv* env)
         "deletePath",
         "getHomePath",
         "makeExecutable",
-        "getCurrentPath"
+        "getCurrentPath",
+        "confirm",
+        "alert",
+        "prompt"
     };
 
     // built-in functions
@@ -586,6 +591,27 @@ void loadFunctions(NeonEnv* env)
             .typeArgs = NULL,
             .typeRetour = TYPE_STRING
         },
+        (Function) {
+            .ptr = _confirm_,
+            .help = "Displays a simple window with title and description and Yes/No or Yes/Cancel buttons following the value of the third argument (\"yesno\" or \"yescancel\")",
+            .nbArgs = 3,
+            .typeArgs = (int[]){TYPE_STRING, TYPE_STRING, TYPE_STRING},
+            .typeRetour = TYPE_STRING
+        },
+        (Function) {
+            .ptr = _alert_,
+            .help = "Displays a simple window with a title, description, and button.",
+            .nbArgs = 3,
+            .typeArgs = (int[]){TYPE_STRING, TYPE_STRING, TYPE_STRING},
+            .typeRetour = TYPE_NONE
+        },
+        (Function) {
+            .ptr = _prompt_,
+            .help = "Displays a simple window with title and description that lets user enter text, and returns a string corresponding.",
+            .nbArgs = 2,
+            .typeArgs = (int[]){TYPE_STRING, TYPE_STRING},
+            .typeRetour = TYPE_STRING
+        }
 
     };
 
@@ -726,6 +752,12 @@ int neonInit(void)
         linenoiseSetMultiLine(1); // spécial pour linenoise
         signal(SIGINT, handle_signal);
         signal(SIGTERM, handle_signal);
+
+        int result = nvd_init();
+        if (result != 0) {
+                printString("Error: Couldn't initialize NvDialog.");
+                exit(EXIT_FAILURE);
+        }
     #endif
     
     #ifdef WINDOWS

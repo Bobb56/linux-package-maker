@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/nvdialog_aboutdlg_test.dir/link.d CMakeFiles/nvdialog_aboutdlg_test.dir/tests/test_aboutdlg.c.o -o nvdialog_aboutdlg_test  libnvdialog.a -lgtk-3 -lgdk-3 -lz -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -ldbus-1

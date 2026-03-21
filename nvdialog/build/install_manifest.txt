@@ -1,0 +1,16 @@
+/usr/local/lib/libnvdialog.a
+/usr/local/include/nvdialog/nvdialog_dialog.h
+/usr/local/include/nvdialog/nvdialog_notification.h
+/usr/local/include/nvdialog/nvdialog_core.h
+/usr/local/include/nvdialog/nvdialog_capab.h
+/usr/local/include/nvdialog/nvdialog_types.h
+/usr/local/include/nvdialog/nvdialog_error.h
+/usr/local/include/nvdialog/nvdialog_platform.h
+/usr/local/include/nvdialog/nvdialog_image.h
+/usr/local/include/nvdialog/nvdialog_string.h
+/usr/local/include/nvdialog/nvdialog.h
+/usr/local/include/nvdialog/dialogs/nvdialog_file_dialog.h
+/usr/local/include/nvdialog/dialogs/nvdialog_about_dialog.h
+/usr/local/include/nvdialog/dialogs/nvdialog_dialog_box.h
+/usr/local/include/nvdialog/dialogs/nvdialog_input_box.h
+/usr/local/share/pkgconfig/nvdialog.pc

@@ -33,5 +33,6 @@ Voici les champs que LPM permet de spécifier pour une application :
 # TODO :
 
 Nettoyer un peu le code et Single Point Of Truth
-Script postinst et préinst
 Interface graphique
+Ajouter un système de crypto et de signature
+Script postinst et préinst

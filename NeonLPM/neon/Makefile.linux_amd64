@@ -1,12 +1,11 @@
 # Nom de l'exécutable final
-TARGET1 = bin/neon
-TARGET2 = bin/libneon.so
+TARGET = bin/neon
 
 # Compilateur et options
 CC = gcc
 ASM = gcc
-CFLAGS = -fPIC -O3 -fno-fast-math -ftrapping-math -fsigned-zeros -frounding-math -g # -pg -fsanitize=address
-LDFLAGS = -lm -g # Flags de linkage
+CFLAGS = -O3 -fno-fast-math -ftrapping-math -fsigned-zeros -frounding-math -g # -pg -fsanitize=address
+LDFLAGS = -lm -g -L./libs -lnvdialog $(shell pkg-config --cflags --libs gtk+-3.0 dbus-1) # Flags de linkage
 ASMFLAGS = -g -m64
 
 # Fichiers src et objets
@@ -18,14 +17,11 @@ ASM_src = src/linux_amd64.S
 ASM_OBJECTS = $(patsubst src/%.S,obj/%.o,$(ASM_src))
 
 # Règle par défaut
-all: $(TARGET1) $(TARGET2)
+all: $(TARGET)
 
 # Compilation de l'exécutable
-$(TARGET1): $(C_OBJECTS) $(ASM_OBJECTS)
-	$(CC) $(C_OBJECTS) $(ASM_OBJECTS) $(LDFLAGS) -o $(TARGET1)
-
-$(TARGET2): $(C_OBJECTS) $(ASM_OBJECTS)
-	$(CC) $(C_OBJECTS) $(ASM_OBJECTS) $(LDFLAGS) -shared -o $(TARGET2)
+$(TARGET): $(C_OBJECTS) $(ASM_OBJECTS)
+	$(CC) $(C_OBJECTS) $(ASM_OBJECTS) $(LDFLAGS) -o $(TARGET)
 
 # Compilation des fichiers objets
 obj/%.o: src/%.c

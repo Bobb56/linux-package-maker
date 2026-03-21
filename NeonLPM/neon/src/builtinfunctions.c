@@ -1,3 +1,5 @@
+#include <nvdialog/nvdialog_string.h>
+#include <nvdialog/nvdialog_types.h>
 #include <string.h>
 #include <time.h>
 #include <math.h>
@@ -31,6 +33,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <nvdialog/nvdialog.h>
 #endif
 
 #ifdef WINDOWS
@@ -1459,4 +1462,76 @@ NeObj _getCurrentPath_(NeList* args) {
     if (!dir) return neo_none_create();
 
     return neo_str_create(strdup(dirname(dir))); // on duplique le résultat final
+}
+
+
+NeObj _confirm_(NeList* args) {
+    NvdQuestionButton button;
+
+    if (strcmp(neo_to_string(ARG(2)), "yesno") == 0)
+        button = NVD_YES_NO;
+    else
+        button = NVD_YES_CANCEL;
+
+    NvdQuestionBox* dialog =
+            nvd_dialog_question_new(neo_to_string(ARG(0)),
+                                    neo_to_string(ARG(1)),
+                                    button);
+    if (!dialog) {
+        printString("Error: Could not construct the dialog.");
+        return neo_bool_create(false);
+    }
+
+    NvdReply reply = nvd_get_reply(dialog);
+    switch (reply) {
+        case NVD_REPLY_OK:
+            return neo_bool_create(true);
+        default:
+            return neo_bool_create(false);
+            break;
+    }
+    nvd_free_object(dialog);
+    return neo_bool_create(false);
+}
+
+
+
+NeObj _alert_(NeList* args) {
+    /* Constructing the dialog. This is the most important part. */
+    NvdDialogBox* dialog = nvd_dialog_box_new(neo_to_string(ARG(0)),
+                                                neo_to_string(ARG(1)),
+                                                NVD_DIALOG_SIMPLE);
+    /* This is not required, but we can set the accept label to something
+        * custom. */
+    nvd_dialog_box_set_accept_text(dialog, neo_to_string(ARG(2)));
+
+    /* If the dialog returned isn't valid (Probably NULL) then something
+        * went wrong and we must stop execution. */
+    if (!dialog) {
+            printString("Error: Could not construct the dialog.");
+            return neo_none_create();
+    }
+
+    /* Showing the dialog to the user */
+    nvd_show_dialog(dialog);
+    /* Then finally, freeing the dialog. */
+    nvd_free_object(dialog);
+    return neo_none_create();
+}
+
+
+NeObj _prompt_(NeList* args) {
+    /* Creating the actual dialog. */
+    NvdInputBox *input = nvd_input_box_new(neo_to_string(ARG(0)), neo_to_string(ARG(1)));
+
+    /* Showing it to the user... */
+    nvd_show_input_box(input);
+    /* And getting back what they entered in the prompt! */
+    NvdDynamicString *msg = nvd_input_box_get_string(input);
+
+    char* ret = strdup(nvd_string_to_cstr(msg));
+
+    nvd_delete_string(msg);
+
+    return neo_str_create(ret);
 }

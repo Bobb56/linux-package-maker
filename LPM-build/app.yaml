@@ -6,3 +6,4 @@ Description: Package maker for any Linux apps
 Terminal: false
 Category: Development
 Command: lpm
+DesktopIcon: false

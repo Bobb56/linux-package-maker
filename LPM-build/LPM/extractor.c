@@ -5,14 +5,9 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <string.h>
-#include <dlfcn.h>
+#include <errno.h>
 
 #include "params.h"
-
-// Déclaration des fonctions d'interface avec l'interpréteur Neon
-void (*execFile) (char*);
-void (*neonInit) (void);
-void (*neonExit) (void);
 
 
 extern unsigned char _binary__LPM_temp_payload_tar_start[];
@@ -40,15 +35,6 @@ char* process_path(char* path) {
 }
 
 
-void load_neon_functions(void) {
-    void *handle = dlopen(EXTRACTING_LIBNEON_PATH, RTLD_LAZY);
-    neonInit = dlsym(handle, "neonInit");
-    neonExit = dlsym(handle, "neonExit");
-    execFile = dlsym(handle, "execFile");
-}
-
-
-
 void extract_archive_from_elf(void) {
     size_t size = _binary__LPM_temp_payload_tar_end - _binary__LPM_temp_payload_tar_start;
     FILE *f = fopen(process_path(EXTRACTED_ARCHIVE_NAME), "wb");
@@ -62,15 +48,30 @@ void extract_archive(void) {
 }
 
 
+/* Ajoute les droits d'exécution au fichier */
+int make_executable(const char *path)
+{
+    struct stat st;
+
+    /* Récupérer les permissions actuelles */
+    if (stat(path, &st) != 0)
+        return errno;
+
+    /* Ajouter les bits d'exécution (user, group, others) */
+    mode_t new_mode = st.st_mode | S_IXUSR | S_IXGRP | S_IXOTH;
+
+    if (chmod(path, new_mode) != 0)
+        return errno;
+
+    return 0;
+}
+
+
 
 int main() {
     extract_archive_from_elf();
     extract_archive();
-
-    load_neon_functions();
-
-    neonInit();
-    execFile(EXTRACTOR_PATH);
-    neonExit();
+    make_executable(process_path(EXTRACTING_LIBNEON_PATH));
+    system(process_path(LAUNCH_EXTRACTOR));
     return 0;
 }

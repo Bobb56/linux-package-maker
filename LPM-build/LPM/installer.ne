@@ -2,7 +2,7 @@ TEMP_FOLDER = ".LPK.temp"
 LPM_DATA_FOLDER = ".LPM"
 
 # Importation des données concernant l'application
-import (getCurrentPath() + '/' + TEMP_FOLDER + "/appdata")
+import (TEMP_FOLDER + '/appdata')
 
 # Dossier d'installation du fichier .desktop
 DESKTOP_FOLDER = getHomePath() + "/.local/share/applications"
@@ -64,12 +64,6 @@ function makeDesktopContent(entries) do
 end
 
 
-function confirm(question) do
-    ans = input(question + " (Y/n): ")
-    return (ans in ['y', 'Y'] or len(ans) == 0)
-end
-
-
 
 
 function getDesktopPath() do
@@ -85,11 +79,12 @@ end
 
 
 function getUninsDesktopEntries() do
+    lpm_data_path = INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER
+
     entries = [
         ["Type", "Application"],
         ["Name", "Uninstall " + AppName],
-        ["Terminal", "True"],
-        ["Exec", INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + '/uninstaller']
+        ["Exec", lpm_data_path + '/neon ' + lpm_data_path + '/uninstaller.ne']
     ]
 
     if (Icon != None) then
@@ -107,63 +102,64 @@ end
 
 
 function main() do
-    print("Installing " + AppName + "...")
+    if (confirm(AppName, "Do you want to install " + AppName + "?", "yescancel")) then
+        # Liste qui va contenir tous les fichiers/dossiers créés à supprimer lors de la désinstallation
+        created_paths = []
 
-    # Liste qui va contenir tous les fichiers/dossiers créés à supprimer lors de la désinstallation
-    created_paths = []
+        # Création du dossier d'installation des applications
+        makeDirectory(INSTALL_DIR)
 
-    # Création du dossier d'installation des applications
-    makeDirectory(INSTALL_DIR)
+        # Copie de toutes les données de l'application
+        copyPath(TEMP_FOLDER + '/' + AppName, INSTALL_DIR + '/' + AppName)
 
-    # Copie de toutes les données de l'application
-    print("Copying app data...")
-    copyPath(TEMP_FOLDER + '/' + AppName, INSTALL_DIR + '/' + AppName)
+        created_paths.append(INSTALL_DIR + '/' + AppName)
 
-    created_paths.append(INSTALL_DIR + '/' + AppName)
+        # Rend le programme de lancement exécutable
+        makeExecutable(INSTALL_DIR + '/' + AppName + '/' + Launcher)
 
-    # Rend le programme de lancement exécutable
-    makeExecutable(INSTALL_DIR + '/' + AppName + '/' + Launcher)
+        # Crée le fichier .desktop de l'application
+        desktop_content = makeDesktopContent(getDesktopEntries())
 
-    # Rend le programme de désinstallation exécutable
-    makeExecutable(INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + '/uninstaller')
+        # Enregistre le .desktop dans le dossier standard
+        writeFile(DESKTOP_FOLDER + '/' + AppName + '.desktop', desktop_content)
 
-    # Crée le fichier .desktop de l'application
-    desktop_content = makeDesktopContent(getDesktopEntries())
+        created_paths.append(DESKTOP_FOLDER + '/' + AppName + '.desktop')
 
-    # Enregistre le .desktop dans le dossier standard
-    writeFile(DESKTOP_FOLDER + '/' + AppName + '.desktop', desktop_content)
+        if (DesktopIcon == None) then
+            DesktopIcon = confirm(AppName, "Do you want to add an icon on the desktop?", "yesno")
+        end
 
-    created_paths.append(DESKTOP_FOLDER + '/' + AppName + '.desktop')
+        if (DesktopIcon) then
+            writeFile(getDesktopPath() + '/' + AppName + '.desktop', desktop_content)
+            created_paths.append(getDesktopPath() + '/' + AppName + '.desktop')
+        end
 
-    if (DesktopIcon) then
-        print("Adding desktop icon...")
-        writeFile(getDesktopPath() + '/' + AppName + '.desktop', desktop_content)
-        created_paths.append(getDesktopPath() + '/' + AppName + '.desktop')
+        # Création de la commande
+        if (Command != None) then
+            content = "#!/bin/sh\n" + INSTALL_DIR + '/' + AppName + '/' + Launcher + ' "$@"'
+            command_path = getHomePath() + "/.local/bin/" + Command
+            writeFile(command_path, content)
+            makeExecutable(command_path)
+
+            created_paths.append(command_path)
+        end
+
+        # Rend exécutable l'interpréteur
+        makeExecutable(INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + '/neon')
+
+        # Création du .desktop pour le désinstallateur
+        unins_desktop_content = makeDesktopContent(getUninsDesktopEntries())
+        writeFile(DESKTOP_FOLDER + '/Unins' + AppName + '.desktop', unins_desktop_content)
+
+        created_paths.append(DESKTOP_FOLDER + '/Unins' + AppName + '.desktop')
+
+        # Sauvegarde des fichiers/dossiers à supprimer lors de la désinstallation
+        saveUninsDat(created_paths)
+
+        alert(AppName, AppName + " was successfully installed!", "Finish")
     end
-
-    # Création de la commande
-    if (Command != None) then
-        content = "#!/bin/sh\n" + INSTALL_DIR + '/' + AppName + '/' + Launcher + ' "$@"'
-        command_path = getHomePath() + "/.local/bin/" + Command
-        writeFile(command_path, content)
-        makeExecutable(command_path)
-
-        created_paths.append(command_path)
-    end
-
-    # Création du .desktop pour le désinstallateur
-    unins_desktop_content = makeDesktopContent(getUninsDesktopEntries())
-    writeFile(DESKTOP_FOLDER + '/Unins' + AppName + '.desktop', unins_desktop_content)
-
-    created_paths.append(DESKTOP_FOLDER + '/Unins' + AppName + '.desktop')
 
     deletePath(TEMP_FOLDER)
-
-    # Sauvegarde des fichiers/dossiers à supprimer lors de la désinstallation
-    saveUninsDat(created_paths)
-
-    print(AppName, "successfully installed!")
-    input("Press ENTER to quit...")
 end
 
 

@@ -1,0 +1,11 @@
+prefix="/usr/local"
+
+Name: libnvdialog
+Description: A simple and minimal dialog library, with cross-platform support
+URL: https://tseli0s.github.io/nv.dialog/
+Version: 0.10.2
+Requires: 
+Requires.private: 
+Cflags:
+Libs: -lnvdialog
+Libs.private:
