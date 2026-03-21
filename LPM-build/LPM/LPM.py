@@ -204,6 +204,8 @@ def getFileDirectory(filepath):
 def build_noparams(config_file):
     config = load_config(config_file)
 
+    print(f"Packaging {config[APP_NAME]}...")
+
     # On récupère le dossier dans lequel est le fichier YAML pour indexer tous les chemins relativement à ce dossier
     config_directory = getFileDirectory(config_file)
 
@@ -245,6 +247,8 @@ def build_noparams(config_file):
     os.system(f"objcopy --input binary --output elf64-x86-64 --binary-architecture i386:x86-64 {ARCHIVE_NAME} {LPM_TEMP_DIR}/payload.o")
 
     os.system(f"gcc {LPM_TEMP_DIR}/{MAIN_C_FILE} {LPM_TEMP_DIR}/payload.o -ldl -lm -o {config[INST_NAME]}.lpk")
+
+    print(f"{config[APP_NAME]} successfully packaged in {config[INST_NAME]}.lpk")
 
 
 def main():

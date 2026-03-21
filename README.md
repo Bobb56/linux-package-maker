@@ -27,7 +27,7 @@ Voici les champs que l'on peut spécifier dans le fichier YAML :
 - AppDirectory: Dossier principal de toute l'arborescence de l'application. Il doit contenir tous les fichiers et dossiers nécessaires au bon fonctionnement de l'application.
 Contrairement à la plupart des utilitaires de création de paquets, LPM laisse une liberté totale quant à l'organisation interne de l'arborescence de l'application. Il a seulement besoin de connaître le chemin de l'exécutable principal à l'intérieur de l'arborescence, et c'est le but du champ Launcher
 
-- Launcher: Indique quel fichier doit être lancé au lancement de l'application
+- Launcher: Indique quel fichier doit être lancé au lancement de l'application. Le chemin doit être relatif au dossier AppDirectory
 
 ## Champs facultatifs :
 - Icon: Chemin vers l'icône de l'application
@@ -46,7 +46,6 @@ Contrairement à la plupart des utilitaires de création de paquets, LPM laisse 
 
 # TODO :
 
-Nettoyer un peu le code et Single Point Of Truth
-Interface graphique
+Gérer les chemins de manière bien plus propre de manière à ne pas traîner des ../.. si jamais il y en a au début
 Ajouter un système de crypto et de signature
 Script postinst et préinst
