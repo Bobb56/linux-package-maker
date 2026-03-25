@@ -7,3 +7,4 @@ Terminal: false
 Category: Development
 Command: lpm
 DesktopIcon: false
+CompressionMode: xz

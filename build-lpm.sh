@@ -21,6 +21,6 @@ cp NeonLPM/neon/bin/neon LPM-build/LPM/neon							&& \
 																	\
 echo ----------- PACKAGING Linux Package Maker -------------		&& \
 # 3. Empaquetage de Linux Package Maker en s'utilisant lui-même		\
-LPM-build/LPM/LPM.sh LPM-build/app.yaml								&& \
+LPM-build/LPM/LPM.sh build LPM-build/app.yaml						&& \
 																	\
 echo ---------------------- DONE ! -------------------------

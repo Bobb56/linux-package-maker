@@ -155,7 +155,7 @@ def load_config(config_file):
         "Version" : None,
         "Category" : None,
         "InstFileName" : config[APP_NAME] + "_installer",
-        "CompressionMode" : "xz",
+        "CompressionMode" : "",
         "DesktopIcon" : None,
         "Command" : None
     }
@@ -175,8 +175,21 @@ def load_config(config_file):
         if not (entry in config):
             config[entry] = DEFAULT_VALUES[entry]
 
+
+    # Transformation des chemins relatifs au fichier de config en chemins absolus
+    config_directory = getFileDirectory(config_file)
+
+    config[ICON] = solve_relative_path(config_directory, config[ICON]) if config[ICON] else config[ICON]
+    config[APP_DIRECTORY] = solve_relative_path(config_directory, config[APP_DIRECTORY])
+
     return config
 
+
+def solve_relative_path(containing_folder, path):
+    if path[0] != '/':
+        return containing_folder + '/' + path
+    else:
+        return path
 
 
 def compress_directory(config, compress_method):
@@ -201,13 +214,13 @@ def getFileDirectory(filepath):
 
 
 
-def build_noparams(config_file):
+def build_installer(config_file):
+    # Création du dossier temporaire de travail
+    create_folder(LPM_TEMP_DIR)
+
     config = load_config(config_file)
 
     print(f"Packaging {config[APP_NAME]}...")
-
-    # On récupère le dossier dans lequel est le fichier YAML pour indexer tous les chemins relativement à ce dossier
-    config_directory = getFileDirectory(config_file)
 
     # Création du header pour donner les constantes au fichier C
     make_header(HEADER_FILE_NAME, make_extractor_strings(config))
@@ -225,7 +238,7 @@ def build_noparams(config_file):
     make_extractor_datafile(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + EXTRACTOR_DATAFILE_NAME, config)
 
     # Ajout de toute l'arborescence de l'application
-    copy_tree(config_directory + '/' + config[APP_DIRECTORY], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME])
+    copy_tree(config[APP_DIRECTORY], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME])
 
     # Crée le sous-dossier dans l'arborescence de l'application utilisé pour stocker notamment l'icone et les scripts de désinstallation
     create_folder(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY)
@@ -235,7 +248,7 @@ def build_noparams(config_file):
 
     # Ajoute l'icône
     if config[ICON]:
-        shutil.copyfile(config_directory + '/' + config[ICON], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + ICON_FILE_NAME)
+        shutil.copyfile(config[ICON], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + ICON_FILE_NAME)
 
     # Ajoute le désinstallateur
     shutil.copyfile(LPM_TEMP_DIR + '/' + UNINSTALLER_SCRIPT_NAME, LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME)
@@ -244,11 +257,16 @@ def build_noparams(config_file):
     compress_directory(config, config[COMPRESSION_MODE])
 
     # Transformation de l'archive en fichier objet
-    os.system(f"objcopy --input binary --output elf64-x86-64 --binary-architecture i386:x86-64 {ARCHIVE_NAME} {LPM_TEMP_DIR}/payload.o")
+    os.system(f"objcopy --input binary --output elf64-x86-64 --binary-architecture i386:x86-64 {ARCHIVE_NAME} \"{LPM_TEMP_DIR}/payload.o\"")
 
-    os.system(f"gcc {LPM_TEMP_DIR}/{MAIN_C_FILE} {LPM_TEMP_DIR}/payload.o -ldl -lm -o {config[INST_NAME]}.lpk")
+    os.system(f"gcc \"{LPM_TEMP_DIR}/{MAIN_C_FILE}\" \"{LPM_TEMP_DIR}/payload.o\" -ldl -lm -o \"{config[INST_NAME]}.lpk\"")
 
     print(f"{config[APP_NAME]} successfully packaged in {config[INST_NAME]}.lpk")
+
+
+    # Suppression du dossier temporaire de travail
+    delete_folder(LPM_TEMP_DIR)
+
 
 
 def main():
@@ -259,12 +277,8 @@ def main():
     parser.add_argument('config_file')
     args = parser.parse_args()
 
-    create_folder(LPM_TEMP_DIR)
-
-    build_noparams(args.config_file)
-
-    delete_folder(LPM_TEMP_DIR)
+    build_installer(args.config_file)
 
 
-
-main()
+if '__main__' == __name__:
+    main()
