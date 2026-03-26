@@ -1,0 +1,4 @@
+pyinstaller
+tkinter
+pyyaml
+setuptools
