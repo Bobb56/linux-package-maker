@@ -4,22 +4,33 @@ LPM_DATA_FOLDER = ".LPM"
 # Importation des données concernant l'application
 import (TEMP_FOLDER + '/appdata')
 
+# Dossier home utilisateur
+HOME = getHomePath()
+
 # Dossier d'installation du fichier .desktop
-DESKTOP_FOLDER = getHomePath() + "/.local/share/applications"
+DESKTOP_FOLDER = HOME + "/.local/share/applications"
 
 # Dossier d'installation de l'icône
-ICON_FOLDER = getHomePath() + '/.local/opt/' + AppName + '/.LPM'
+ICON_FOLDER = HOME + '/.local/opt/' + AppName + '/.LPM'
 
 # Dossier d'installation de l'application
-INSTALL_DIR = getHomePath() + '/.local/opt'
+INSTALL_DIR = HOME + '/.local/opt'
 
+
+function lowercase_bool(bool) do
+    if (bool) then
+        return ('true')
+    else
+        return ('false')
+    end
+end
 
 
 function getDesktopEntries() do
     entries = [
         ["Type", "Application"],
         ["Name", AppName],
-        ["Terminal", str(Terminal)],
+        ["Terminal", lowercase_bool(Terminal)],
         ["Exec", INSTALL_DIR + '/' + AppName + '/' + Launcher]
     ]
 
@@ -67,14 +78,14 @@ end
 
 
 function getDesktopPath() do
-    copyPath(getHomePath() + "/.config/user-dirs.dirs", TEMP_FOLDER + '/xdg_variables.ne')
+    copyPath(HOME + "/.config/user-dirs.dirs", TEMP_FOLDER + '/xdg_variables.ne')
     try
         import(TEMP_FOLDER + "/xdg_variables")
     except () do
         pass
     end
     deletePath(TEMP_FOLDER + '/xdg_variables.ne')
-    return (XDG_DESKTOP_DIR.replace("$HOME", getHomePath()))
+    return (XDG_DESKTOP_DIR.replace("$HOME", HOME))
 end
 
 
@@ -98,6 +109,24 @@ end
 function saveUninsDat(paths) do
     content = "created_paths = " + str(created_paths) + '\nAppName = "' + AppName + '"\n'
     writeFile(INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + "/uninsdat.ne", content)
+end
+
+
+function update_path(string) do
+    files = [
+                HOME + "/.bashrc",
+                HOME + "/.profile",
+                HOME + "/.zshrc"
+            ]
+    foreach (file, files) do
+        try
+            content = readFile(file)
+            content += '\nexport PATH="' + string + ':$PATH"'
+            writeFile(file, content)
+        except () do
+            pass
+        end
+    end
 end
 
 
@@ -137,7 +166,11 @@ function main() do
         # Création de la commande
         if (Command != None) then
             content = "#!/bin/sh\n" + INSTALL_DIR + '/' + AppName + '/' + Launcher + ' "$@"'
-            command_path = getHomePath() + "/.local/bin/" + Command
+
+            command_folder = HOME + "/.local/bin"
+            command_path = command_folder + "/" + Command
+
+            makeDirectory(command_folder)
             writeFile(command_path, content)
             makeExecutable(command_path)
 

@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-from ttkthemes import ThemedTk
 import yaml
 import os
 import tempfile
@@ -89,11 +88,106 @@ class ToolTip:
             self.tip.destroy()
             self.tip = None
 
+
+
+
+def apply_theme(style):
+    style.theme_use("default")
+
+    # Palette claire
+    bg = "#cffffb"
+    fg = "#2b2d42"
+    accent = "#4f8cff"
+    accent_hover = "#3a6fd8"
+    entry_bg = "#ffffff"
+    border = "#dcdde1"
+
+    # Global
+    style.configure(
+        ".",
+        background=bg,
+        foreground=fg,
+        font=("Noto Sans", 10)
+    )
+
+    # Labels
+    style.configure(
+        "TLabel",
+        background=bg,
+        foreground=fg,
+        padding=4
+    )
+
+    # Boutons "arrondis"
+    style.configure(
+        "Rounded.TButton",
+        background=accent,
+        foreground="white",
+        borderwidth=0,
+        padding=(14, 8),
+        relief="flat"
+    )
+
+    style.map(
+        "Rounded.TButton",
+        background=[
+            ("active", accent_hover),
+            ("pressed", accent_hover)
+        ],
+        foreground=[
+            ("disabled", "#aaaaaa")
+        ]
+    )
+
+    # Hack visuel pour effet arrondi (padding + focus off)
+    style.layout("Rounded.TButton", [
+        ("Button.border", {
+            "sticky": "nswe",
+            "children": [
+                ("Button.focus", {
+                    "sticky": "nswe",
+                    "children": [
+                        ("Button.padding", {
+                            "sticky": "nswe",
+                            "children": [
+                                ("Button.label", {"sticky": "nswe"})
+                            ]
+                        })
+                    ]
+                })
+            ]
+        })
+    ])
+
+    # Entrées
+    style.configure(
+        "TEntry",
+        fieldbackground=entry_bg,
+        background=entry_bg,
+        foreground=fg,
+        bordercolor=border,
+        lightcolor=border,
+        darkcolor=border,
+        padding=6,
+        relief="flat"
+    )
+
+    style.map(
+        "TEntry",
+        bordercolor=[("focus", accent)],
+        fieldbackground=[("focus", "#eef3ff")]
+    )
+
+
+
 class LPMGui:
     def __init__(self, root):
         self.root = root
         self.root.title("Linux Package Maker - Graphical wizard")
         self.root.resizable(False, False)
+
+        style = ttk.Style()
+        apply_theme(style)
 
         self.entries = {}
 
@@ -129,9 +223,9 @@ class LPMGui:
         row = self.add_entry(main, row, "InstFileName")
         row = self.add_combobox(main, row, "CompressionMode", COMPRESSION_TYPES)
 
-        ttk.Button(main, text="Generate file", command=self.generate_yaml).grid(row=row, column=0, pady=10)
-        ttk.Button(main, text="Generate installer", command=self.generate_installer).grid(row=row, column=1, pady=10)
-        ttk.Button(main, text="Load file", command=self.load_yaml).grid(row=row, column=2, pady=10)
+        ttk.Button(main, text="Generate file", command=self.generate_yaml, style = "Rounded.TButton").grid(row=row, column=0, pady=10)
+        ttk.Button(main, text="Generate installer", command=self.generate_installer, style = "Rounded.TButton").grid(row=row, column=1, pady=10)
+        ttk.Button(main, text="Load file", command=self.load_yaml, style = "Rounded.TButton").grid(row=row, column=2, pady=10)
 
     def validate_ascii(self, text):
         try:
@@ -164,7 +258,7 @@ class LPMGui:
                     entry.config(state="readonly")
                 self.update_installer_name()
 
-            ttk.Button(parent, text="Browse", command=browse_cmd).grid(row=row, column=3)
+            ttk.Button(parent, text="Browse", command=browse_cmd, style = "Rounded.TButton").grid(row=row, column=2)
 
         self.entries[name] = entry
         return row + 1
@@ -321,6 +415,6 @@ class LPMGui:
 
 
 def launch_app():
-    root = ThemedTk(theme="clearlooks")
+    root = tk.Tk()
     app = LPMGui(root)
     root.mainloop()
