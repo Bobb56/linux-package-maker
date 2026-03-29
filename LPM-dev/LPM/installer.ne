@@ -17,6 +17,25 @@ ICON_FOLDER = HOME + '/.local/opt/' + AppName + '/.LPM'
 INSTALL_DIR = HOME + '/.local/opt'
 
 
+
+
+function split(string, separator) do
+    parsable_string = "['" + string.replace(separator, "', '") + "']"
+    return (eval(parsable_string))
+end
+
+function isInPATH(path) do
+    PATH = split(getEnvVar("PATH"), ':')
+    return (path in PATH)
+end
+
+function addToPath(string) do
+    PATH = getEnvVar("PATH")
+    setEnvVar("PATH", string + ':' + PATH)
+end
+
+
+
 function lowercase_bool(bool) do
     if (bool) then
         return ('true')
@@ -111,21 +130,27 @@ function saveUninsDat(paths) do
     writeFile(INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + "/uninsdat.ne", content)
 end
 
-
+$
+This function updates the path value with a new string
+It adds a new entry in the existing files among .bashrc, .zshrc, .profile in order to make the changes permanent
+$
 function update_path(string) do
-    files = [
-                HOME + "/.bashrc",
-                HOME + "/.profile",
-                HOME + "/.zshrc"
-            ]
-    foreach (file, files) do
-        try
-            content = readFile(file)
-            content += '\nexport PATH="' + string + ':$PATH"'
-            writeFile(file, content)
-        except () do
-            pass
+    if (not isInPATH(string)) then
+        files = [
+                    HOME + "/.bashrc",
+                    HOME + "/.profile",
+                    HOME + "/.zshrc"
+        ]
+        foreach (file, files) do
+            try
+                content = readFile(file)
+                content += '\nexport PATH="' + string + ':$PATH"'
+                writeFile(file, content)
+            except () do
+                pass
+            end
         end
+        addToPath(string)
     end
 end
 
@@ -173,6 +198,8 @@ function main() do
             makeDirectory(command_folder)
             writeFile(command_path, content)
             makeExecutable(command_path)
+
+            update_path(command_folder)
 
             created_paths.append(command_path)
         end

@@ -1535,3 +1535,15 @@ NeObj _prompt_(NeList* args) {
 
     return neo_str_create(ret);
 }
+
+
+NeObj _getEnvVar(NeList* args) {
+    char* value = getenv(neo_to_string(ARG(0)));
+    return neo_str_create(strdup(value));
+}
+
+
+NeObj _setEnvVar(NeList* args) {
+    setenv(neo_to_string(ARG(0)), strdup(neo_to_string(ARG(1))), true);
+    return neo_none_create();
+}

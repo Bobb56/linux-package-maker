@@ -145,7 +145,9 @@ void loadFunctions(NeonEnv* env)
         "getCurrentPath",
         "confirm",
         "alert",
-        "prompt"
+        "prompt",
+        "getEnvVar",
+        "setEnvVar"
     };
 
     // built-in functions
@@ -611,6 +613,20 @@ void loadFunctions(NeonEnv* env)
             .nbArgs = 2,
             .typeArgs = (int[]){TYPE_STRING, TYPE_STRING},
             .typeRetour = TYPE_STRING
+        },
+        (Function) {
+            .ptr = _getEnvVar,
+            .help = "Returns the value of the specified environment variable.",
+            .nbArgs = 1,
+            .typeArgs = (int[]){TYPE_STRING},
+            .typeRetour = TYPE_STRING
+        },
+        (Function) {
+            .ptr = _setEnvVar,
+            .help = "Overwrites the content of an environment variable. Use setEnvVar(name, content)",
+            .nbArgs = 2,
+            .typeArgs = (int[]){TYPE_STRING, TYPE_STRING},
+            .typeRetour = TYPE_NONE
         }
 
     };
