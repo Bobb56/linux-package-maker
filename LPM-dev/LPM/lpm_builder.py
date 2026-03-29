@@ -263,7 +263,7 @@ def build_installer(config_file):
     # Transformation de l'archive en fichier objet
     os.system(f"objcopy --input binary --output elf64-x86-64 --binary-architecture i386:x86-64 {ARCHIVE_NAME} \"{LPM_TEMP_DIR}/payload.o\"")
 
-    os.system(f"gcc \"{LPM_TEMP_DIR}/{MAIN_C_FILE}\" \"{LPM_TEMP_DIR}/payload.o\" -ldl -lm -o \"{config[INST_NAME]}.lpk\"")
+    os.system(f"gcc \"{LPM_TEMP_DIR}/{MAIN_C_FILE}\" \"{LPM_TEMP_DIR}/payload.o\" -lm -o \"{config[INST_NAME]}.lpk\"")
 
     print(f"{config[APP_NAME]} successfully packaged in {config[INST_NAME]}.lpk")
 
