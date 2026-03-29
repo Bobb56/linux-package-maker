@@ -16,6 +16,8 @@ ICON_FOLDER = HOME + '/.local/opt/' + AppName + '/.LPM'
 # Dossier d'installation de l'application
 INSTALL_DIR = HOME + '/.local/opt'
 
+# Dossier dans lequel on stocke la commande
+COMMAND_FOLDER = HOME + '/.local/bin'
 
 
 
@@ -160,8 +162,9 @@ function main() do
         # Liste qui va contenir tous les fichiers/dossiers créés à supprimer lors de la désinstallation
         created_paths = []
 
-        # Création du dossier d'installation des applications
+        # Création du dossier d'installation des applications et de sauvegarde des fichiers .desktop
         makeDirectory(INSTALL_DIR)
+        makeDirectory(DESKTOP_FOLDER)
 
         # Copie de toutes les données de l'application
         copyPath(TEMP_FOLDER + '/' + AppName, INSTALL_DIR + '/' + AppName)
@@ -192,14 +195,13 @@ function main() do
         if (Command != None) then
             content = "#!/bin/sh\n" + INSTALL_DIR + '/' + AppName + '/' + Launcher + ' "$@"'
 
-            command_folder = HOME + "/.local/bin"
-            command_path = command_folder + "/" + Command
+            command_path = COMMAND_FOLDER + "/" + Command
 
-            makeDirectory(command_folder)
+            makeDirectory(COMMAND_FOLDER)
             writeFile(command_path, content)
             makeExecutable(command_path)
 
-            update_path(command_folder)
+            update_path(COMMAND_FOLDER)
 
             created_paths.append(command_path)
         end

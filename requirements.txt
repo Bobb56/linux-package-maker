@@ -1,4 +1,9 @@
+# Python packages needed :
 pyinstaller
-tkinter
+tk
 pyyaml
 setuptools
+
+#Packages needed :
+cmake
+make
