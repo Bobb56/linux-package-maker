@@ -11,14 +11,17 @@ LPM ajoute automatiquement l'application à la liste des applications système, 
 
 LPM est distribué grâce à LPM, c'est-à-dire en fichier .lpk
 
-Pour l'installer, il suffit de télécharger LPM_installer.lpk dans les releases, puis de l'exécuter.
+Pour l'installer, il suffit de télécharger Linux_Package_maker_installer.lpk dans les releases, puis de l'exécuter.
 
 Tout le reste est automatique.
 
 ## Comment utiliser LPM
 
-Linux Package Maker expose la commande `lpm` qui prend en argument un chemin vers un fichier YAML contenant les informations nécessaires à la fabrication du paquet telles que le nom de l'application, le fichier exécutable principal, le dossier contenant toutes les données de l'application, etc.
+Linux Package Maker expose la commande `lpm`.
 
+Lancée sans arguments, cette commande lance une interface graphique permettant de créer un package.
+
+Pour compiler un package sans interface graphique, il faut lancer la commande `lpm build <fichier.yaml>`
 
 Voici les champs que l'on peut spécifier dans le fichier YAML :
 
