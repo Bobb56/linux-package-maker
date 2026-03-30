@@ -1,4 +1,4 @@
-# LPM (Linux Package Manager)
+# LPM (Linux Package Maker)
 
 LPM (Linux Package Maker) est un utilitaire permettant de distribuer des applications Linux.
 LPM utilise un fichier de configuration répertoriant les métadonnées de l'application (Nom, Description, Icône, ...) ainsi que les fichiers de l'application.
