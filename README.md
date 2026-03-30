@@ -15,6 +15,11 @@ Pour l'installer, il suffit de télécharger Linux_Package_maker_installer.lpk d
 
 Tout le reste est automatique.
 
+Alternativement, vous pouvez également installer Linux Package Maker en collant cette commande dans un terminal :
+```
+wget https://github.com/Bobb56/linux-package-maker/releases/download/1.3/Linux_Package_Maker_installer.lpk && chmod +x Linux_Package_Maker_installer.lpk && ./Linux_Package_Maker_installer.lpk
+```
+
 ## Comment utiliser LPM
 
 Linux Package Maker expose la commande `lpm`.
