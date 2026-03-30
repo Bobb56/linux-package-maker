@@ -1,4 +1,4 @@
-AppName: LPM
+AppName: Linux Package Maker
 AppDirectory: LPM
 Launcher: lpm
 ShortDescription: Linux Package Maker
@@ -6,5 +6,6 @@ Description: Package maker for any Linux apps
 Terminal: false
 Category: Development
 Command: lpm
-DesktopIcon: false
+DesktopIcon: true
 CompressionMode: xz
+Icon: lpm.png

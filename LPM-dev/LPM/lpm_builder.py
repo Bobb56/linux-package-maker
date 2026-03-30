@@ -51,6 +51,7 @@ MAIN_C_FILE = "extractor.c"
 # Définition des noms données aux attributs
 APP_DIRECTORY = "AppDirectory"
 APP_NAME = "AppName"
+SAFE_APP_NAME = "SafeAppName"
 ICON = "Icon"
 INST_NAME = "InstFileName"
 COMPRESSION_MODE = "CompressionMode"
@@ -131,6 +132,10 @@ def delete_folder(path):
         pass
 
 
+def make_identifier(name):
+    name = name.replace(' ', '_')
+    return name
+
 
 def make_header(name, args):
     """
@@ -146,16 +151,16 @@ def make_header(name, args):
 
 def make_extractor_strings(config):
     EXTRACTED_ARCHIVE_NAME = ".archive.tar"
-    EXTRACTING_LIBNEON_PATH = LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'neon'
+    EXTRACTING_LIBNEON_PATH = LPM_EXTRACTING_DIR + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'neon'
     LAUNCH_EXTRACTOR = EXTRACTING_LIBNEON_PATH + ' ' + LPM_EXTRACTING_DIR + '/' + EXTRACTOR_SCRIPT_NAME
 
     return {
         "EXTRACTING_LIBNEON_PATH"   : EXTRACTING_LIBNEON_PATH,
-        "LIBNEON_PATH"              : INSTALL_DIRECTORY + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/neon',
+        "LIBNEON_PATH"              : INSTALL_DIRECTORY + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/neon',
         "LAUNCH_EXTRACTOR"          : LAUNCH_EXTRACTOR,
         "EXTRACTED_ARCHIVE_NAME"    : EXTRACTED_ARCHIVE_NAME,
         "EXTRACTING_COMMAND"        : f"tar -xf {EXTRACTED_ARCHIVE_NAME}",
-        "UNINSTALLER_PATH"          : INSTALL_DIRECTORY + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME
+        "UNINSTALLER_PATH"          : INSTALL_DIRECTORY + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME
     }
 
 
@@ -173,7 +178,13 @@ def load_config(config_file):
     # Checking if all required entries are present
 
     REQUIRED = ["AppName", "AppDirectory", "Launcher"]
+
+    for entry in REQUIRED:
+        if not (entry in config):
+            failwith(f"Entry \"{entry}\" is required in {config_file}")
+
     DEFAULT_VALUES = {
+        "SafeAppName" : make_identifier(config[APP_NAME]),
         "Icon" : None,
         "ShortDescription" : None,
         "Description" : None,
@@ -181,16 +192,11 @@ def load_config(config_file):
         "Author" : None,
         "Version" : None,
         "Category" : None,
-        "InstFileName" : config[APP_NAME] + "_installer",
+        "InstFileName" : make_identifier(config[APP_NAME]) + "_installer",
         "CompressionMode" : "",
         "DesktopIcon" : None,
         "Command" : None
     }
-
-
-    for entry in REQUIRED:
-        if not (entry in config):
-            failwith(f"Entry \"{entry}\" is required in {config_file}")
 
     for entry in config:
         if (not (entry in REQUIRED)) and (not (entry in DEFAULT_VALUES)):
@@ -267,20 +273,20 @@ def build_installer(config_file):
     make_extractor_datafile(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + EXTRACTOR_DATAFILE_NAME, config)
 
     # Ajout de toute l'arborescence de l'application
-    copy_tree(config[APP_DIRECTORY], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME])
+    copy_tree(config[APP_DIRECTORY], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[SAFE_APP_NAME])
 
     # Crée le sous-dossier dans l'arborescence de l'application utilisé pour stocker notamment l'icone et les scripts de désinstallation
-    create_folder(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY)
+    create_folder(LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY)
 
     # Ajoute la bibliothèque dynamique Neon
-    shutil.copyfile(LPM_TEMP_DIR + '/' + "neon", LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'neon')
+    shutil.copyfile(LPM_TEMP_DIR + '/' + "neon", LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + 'neon')
 
     # Ajoute l'icône
     if config[ICON]:
-        shutil.copyfile(config[ICON], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + ICON_FILE_NAME)
+        shutil.copyfile(config[ICON], LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + ICON_FILE_NAME)
 
     # Ajoute le désinstallateur
-    shutil.copyfile(LPM_TEMP_DIR + '/' + UNINSTALLER_SCRIPT_NAME, LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME)
+    shutil.copyfile(LPM_TEMP_DIR + '/' + UNINSTALLER_SCRIPT_NAME, LPM_TEMP_DIR + '/' + LPM_EXTRACTING_DIR + '/' + config[SAFE_APP_NAME] + '/' + LPM_DATA_DIRECTORY + '/' + UNINSTALLER_SCRIPT_NAME)
 
     # Compression de l'archive complète
     compress_directory(config, config[COMPRESSION_MODE])

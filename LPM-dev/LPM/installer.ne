@@ -11,7 +11,7 @@ HOME = getHomePath()
 DESKTOP_FOLDER = HOME + "/.local/share/applications"
 
 # Dossier d'installation de l'icône
-ICON_FOLDER = HOME + '/.local/opt/' + AppName + '/.LPM'
+ICON_FOLDER = HOME + '/.local/opt/' + SafeAppName + '/.LPM'
 
 # Dossier d'installation de l'application
 INSTALL_DIR = HOME + '/.local/opt'
@@ -52,7 +52,7 @@ function getDesktopEntries() do
         ["Type", "Application"],
         ["Name", AppName],
         ["Terminal", lowercase_bool(Terminal)],
-        ["Exec", INSTALL_DIR + '/' + AppName + '/' + Launcher]
+        ["Exec", INSTALL_DIR + '/' + SafeAppName + '/' + Launcher]
     ]
 
     if (Description != None) then
@@ -111,7 +111,7 @@ end
 
 
 function getUninsDesktopEntries() do
-    lpm_data_path = INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER
+    lpm_data_path = INSTALL_DIR + '/' + SafeAppName + '/' + LPM_DATA_FOLDER
 
     entries = [
         ["Type", "Application"],
@@ -128,8 +128,8 @@ end
 
 
 function saveUninsDat(paths) do
-    content = "created_paths = " + str(created_paths) + '\nAppName = "' + AppName + '"\n'
-    writeFile(INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + "/uninsdat.ne", content)
+    content = "created_paths = " + str(created_paths) + '\nAppName = "' + AppName + '"\nSafeAppName = "' + SafeAppName + '"\n'
+    writeFile(INSTALL_DIR + '/' + SafeAppName + '/' + LPM_DATA_FOLDER + "/uninsdat.ne", content)
 end
 
 $
@@ -167,33 +167,33 @@ function main() do
         makeDirectory(DESKTOP_FOLDER)
 
         # Copie de toutes les données de l'application
-        copyPath(TEMP_FOLDER + '/' + AppName, INSTALL_DIR + '/' + AppName)
+        copyPath(TEMP_FOLDER + '/' + SafeAppName, INSTALL_DIR + '/' + SafeAppName)
 
-        created_paths.append(INSTALL_DIR + '/' + AppName)
+        created_paths.append(INSTALL_DIR + '/' + SafeAppName)
 
         # Rend le programme de lancement exécutable
-        makeExecutable(INSTALL_DIR + '/' + AppName + '/' + Launcher)
+        makeExecutable(INSTALL_DIR + '/' + SafeAppName + '/' + Launcher)
 
         # Crée le fichier .desktop de l'application
         desktop_content = makeDesktopContent(getDesktopEntries())
 
         # Enregistre le .desktop dans le dossier standard
-        writeFile(DESKTOP_FOLDER + '/' + AppName + '.desktop', desktop_content)
+        writeFile(DESKTOP_FOLDER + '/' + SafeAppName + '.desktop', desktop_content)
 
-        created_paths.append(DESKTOP_FOLDER + '/' + AppName + '.desktop')
+        created_paths.append(DESKTOP_FOLDER + '/' + SafeAppName + '.desktop')
 
         if (DesktopIcon == None) then
             DesktopIcon = confirm(AppName, "Do you want to add an icon on the desktop?", "yesno")
         end
 
         if (DesktopIcon) then
-            writeFile(getDesktopPath() + '/' + AppName + '.desktop', desktop_content)
-            created_paths.append(getDesktopPath() + '/' + AppName + '.desktop')
+            writeFile(getDesktopPath() + '/' + SafeAppName + '.desktop', desktop_content)
+            created_paths.append(getDesktopPath() + '/' + SafeAppName + '.desktop')
         end
 
         # Création de la commande
         if (Command != None) then
-            content = "#!/bin/sh\n" + INSTALL_DIR + '/' + AppName + '/' + Launcher + ' "$@"'
+            content = "#!/bin/sh\n" + INSTALL_DIR + '/' + SafeAppName + '/' + Launcher + ' "$@"'
 
             command_path = COMMAND_FOLDER + "/" + Command
 
@@ -207,13 +207,13 @@ function main() do
         end
 
         # Rend exécutable l'interpréteur
-        makeExecutable(INSTALL_DIR + '/' + AppName + '/' + LPM_DATA_FOLDER + '/neon')
+        makeExecutable(INSTALL_DIR + '/' + SafeAppName + '/' + LPM_DATA_FOLDER + '/neon')
 
         # Création du .desktop pour le désinstallateur
         unins_desktop_content = makeDesktopContent(getUninsDesktopEntries())
-        writeFile(DESKTOP_FOLDER + '/Unins' + AppName + '.desktop', unins_desktop_content)
+        writeFile(DESKTOP_FOLDER + '/Unins' + SafeAppName + '.desktop', unins_desktop_content)
 
-        created_paths.append(DESKTOP_FOLDER + '/Unins' + AppName + '.desktop')
+        created_paths.append(DESKTOP_FOLDER + '/Unins' + SafeAppName + '.desktop')
 
         # Sauvegarde des fichiers/dossiers à supprimer lors de la désinstallation
         saveUninsDat(created_paths)
