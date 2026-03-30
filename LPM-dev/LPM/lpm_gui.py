@@ -415,6 +415,8 @@ class LPMGui:
 
 
 def launch_app():
+    lpm_builder.alert_missing_dependencies_error(lambda message : messagebox.showerror("Error", message))
+
     root = tk.Tk()
     app = LPMGui(root)
     root.mainloop()

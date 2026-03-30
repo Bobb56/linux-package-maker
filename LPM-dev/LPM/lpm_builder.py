@@ -38,6 +38,8 @@ import shutil
 import tarfile
 from distutils.dir_util import copy_tree
 
+dependencies = ["objcopy", "gcc"]
+
 
 EXTRACTOR_SCRIPT_NAME = "installer.ne"
 UNINSTALLER_BINARY_C_FILE = "uninstaller.c"
@@ -70,6 +72,27 @@ INSTALL_DIRECTORY = "~/.local/opt"
 def failwith(error):
     print(error)
     sys.exit()
+
+
+def has_command(cmd):
+    return shutil.which(cmd) is not None
+
+
+def check_dependencies(commands):
+    for command in commands:
+        if shutil.which(command) is None:
+            return False
+    return True
+
+def get_missing_dependencies_error_message(dependencies):
+    return f"Please ensure to have installed the following commands on your system :\n{'-' + '\n-'.join(dependencies)}"
+
+
+def alert_missing_dependencies_error(display_function):
+    if not check_dependencies(dependencies):
+        display_function(get_missing_dependencies_error_message(dependencies))
+        sys.exit()
+
 
 
 def get_installation_dir():
@@ -219,6 +242,8 @@ def getFileDirectory(filepath):
 
 
 def build_installer(config_file):
+    alert_missing_dependencies_error(print)
+
     # Création du dossier temporaire de travail
     create_folder(LPM_TEMP_DIR)
 

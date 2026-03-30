@@ -17,6 +17,7 @@ def main():
     elif len(sys.argv) == 3 and sys.argv[1] == 'build':
         lpm_builder.build_installer(sys.argv[2])
     else:
+        lpm_builder.alert_missing_dependencies_error(print)
         print_help()
 
 
