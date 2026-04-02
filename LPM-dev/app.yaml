@@ -6,6 +6,5 @@ Description: Package maker for any Linux apps
 Terminal: false
 Category: Development
 Command: lpm
-DesktopIcon: true
 CompressionMode: xz
 Icon: lpm.png
