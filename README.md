@@ -54,8 +54,5 @@ Contrairement à la plupart des utilitaires de création de paquets, LPM laisse 
 
 # TODO :
 
-Gérer les chemins de manière bien plus propre de manière à ne pas traîner des ../.. si jamais il y en a au début
-Faire fonctionner LPM dans un environnement python virtuel contenant tkinter, pyyaml et toutes les libs
-Faire une interface graphique pour créer le fichier YAML
 Ajouter un système de crypto et de signature
 Script postinst et préinst

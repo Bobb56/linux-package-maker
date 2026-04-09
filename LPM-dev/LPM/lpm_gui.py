@@ -185,6 +185,7 @@ class LPMGui:
         self.root = root
         self.root.title("Linux Package Maker - Graphical wizard")
         self.root.resizable(False, False)
+        self.root.iconphoto(True, tk.PhotoImage(file=lpm_builder.get_installation_dir() + "/lpm.png"))
 
         style = ttk.Style()
         apply_theme(style)
