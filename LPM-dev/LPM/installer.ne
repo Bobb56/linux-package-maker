@@ -46,6 +46,18 @@ function lowercase_bool(bool) do
     end
 end
 
+$
+This function checks if an app is already installed as a Linux Package
+$
+function isAlreadyInstalled() do
+    try
+        readFile(DESKTOP_FOLDER + '/' + SafeAppName + '.desktop')
+        return (True)
+    except () do
+        return (False)
+    end
+end
+
 
 function getDesktopEntries() do
     entries = [
@@ -97,7 +109,9 @@ end
 
 
 
-
+$
+Returns the absolute path to the desktop
+$
 function getDesktopPath() do
     copyPath(HOME + "/.config/user-dirs.dirs", TEMP_FOLDER + '/xdg_variables.ne')
     try
@@ -158,7 +172,13 @@ end
 
 
 function main() do
-    if (confirm(AppName, "Do you want to install " + AppName + "?", "yescancel")) then
+    if (isAlreadyInstalled()) then
+        message = "Do you want to update "
+    else
+        message = "Do you want to install "
+    end
+
+    if (confirm(AppName, message + AppName + "?", "yescancel")) then
         # Liste qui va contenir tous les fichiers/dossiers créés à supprimer lors de la désinstallation
         created_paths = []
 
@@ -193,7 +213,7 @@ function main() do
 
         # Création de la commande
         if (Command != None) then
-            content = "#!/bin/sh\n" + INSTALL_DIR + '/' + SafeAppName + '/' + Launcher + ' "$@"'
+            content = "#!sh\n" + INSTALL_DIR + '/' + SafeAppName + '/' + Launcher + ' "$@"'
 
             command_path = COMMAND_FOLDER + "/" + Command
 
