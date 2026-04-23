@@ -53,6 +53,6 @@ Contrairement à la plupart des utilitaires de création de paquets, LPM laisse 
 
 
 # TODO :
-
+Ajouter un paramètre --no-gui pour faire des input normaux au lieu des fonctions de nvdialog pour les installations en ligne de commande
 Ajouter un système de crypto et de signature
 Script postinst et préinst
