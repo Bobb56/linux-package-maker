@@ -147,7 +147,8 @@ void loadFunctions(NeonEnv* env)
         "alert",
         "prompt",
         "getEnvVar",
-        "setEnvVar"
+        "setEnvVar",
+        "createSymlink"
     };
 
     // built-in functions
@@ -624,6 +625,13 @@ void loadFunctions(NeonEnv* env)
         (Function) {
             .ptr = _setEnvVar,
             .help = "Overwrites the content of an environment variable. Use setEnvVar(name, content)",
+            .nbArgs = 2,
+            .typeArgs = (int[]){TYPE_STRING, TYPE_STRING},
+            .typeRetour = TYPE_NONE
+        },
+        (Function) {
+            .ptr = _createSymlink,
+            .help = "Creates a symbolic link from two different paths",
             .nbArgs = 2,
             .typeArgs = (int[]){TYPE_STRING, TYPE_STRING},
             .typeRetour = TYPE_NONE

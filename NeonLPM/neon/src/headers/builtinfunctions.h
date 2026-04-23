@@ -5,7 +5,7 @@
 #include "neobj.h"
 #include "objects.h"
 
-#define NBBUILTINFUNC 68
+#define NBBUILTINFUNC 69
 
 #define ARG(n)      args->tab[n]
 NeObj _print_(NeList* args);
@@ -76,5 +76,6 @@ NeObj _alert_(NeList* args);
 NeObj _prompt_(NeList* args);
 NeObj _getEnvVar(NeList* args);
 NeObj _setEnvVar(NeList* args);
+NeObj _createSymlink(NeList* args);
 
 #endif

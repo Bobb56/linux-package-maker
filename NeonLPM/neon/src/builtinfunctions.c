@@ -1547,3 +1547,8 @@ NeObj _setEnvVar(NeList* args) {
     setenv(neo_to_string(ARG(0)), strdup(neo_to_string(ARG(1))), true);
     return neo_none_create();
 }
+
+NeObj _createSymlink(NeList* args) {
+    symlink(neo_to_string(ARG(0)), neo_to_string(ARG(1)));
+    return neo_none_create();
+}

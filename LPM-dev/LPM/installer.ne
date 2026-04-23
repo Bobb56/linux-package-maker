@@ -198,27 +198,27 @@ function main() do
         desktop_content = makeDesktopContent(getDesktopEntries())
 
         # Enregistre le .desktop dans le dossier standard
-        writeFile(DESKTOP_FOLDER + '/' + SafeAppName + '.desktop', desktop_content)
+        desktop_file_path = DESKTOP_FOLDER + '/' + SafeAppName + '.desktop'
+        writeFile(desktop_file_path, desktop_content)
 
-        created_paths.append(DESKTOP_FOLDER + '/' + SafeAppName + '.desktop')
+        created_paths.append(desktop_file_path)
 
         if (DesktopIcon == None) then
             DesktopIcon = confirm(AppName, "Do you want to add an icon on the desktop?", "yesno")
         end
 
         if (DesktopIcon) then
-            writeFile(getDesktopPath() + '/' + SafeAppName + '.desktop', desktop_content)
+            createSymlink(desktop_file_path, getDesktopPath() + '/' + SafeAppName + '.desktop')
             created_paths.append(getDesktopPath() + '/' + SafeAppName + '.desktop')
         end
 
         # Création de la commande
         if (Command != None) then
-            content = "#!sh\n" + INSTALL_DIR + '/' + SafeAppName + '/' + Launcher + ' "$@"'
 
             command_path = COMMAND_FOLDER + "/" + Command
-
             makeDirectory(COMMAND_FOLDER)
-            writeFile(command_path, content)
+
+            createSymlink(INSTALL_DIR + '/' + SafeAppName + '/' + Launcher, command_path)
             makeExecutable(command_path)
 
             update_path(COMMAND_FOLDER)
