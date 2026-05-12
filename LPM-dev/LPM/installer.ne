@@ -173,12 +173,14 @@ end
 
 function main() do
     if (isAlreadyInstalled()) then
-        message = "Do you want to update "
+        message1 = "Do you want to update " + AppName + "?"
+        message2 = AppName + " was successfully updated!"
     else
-        message = "Do you want to install "
+        message1 = "Do you want to install " + AppName + "?"
+        message2 = AppName + " was successfully installed!"
     end
 
-    if (confirm(AppName, message + AppName + "?", "yescancel")) then
+    if (confirm(AppName, message1, "yescancel")) then
         # Liste qui va contenir tous les fichiers/dossiers créés à supprimer lors de la désinstallation
         created_paths = []
 
@@ -203,8 +205,10 @@ function main() do
 
         created_paths.append(desktop_file_path)
 
-        if (DesktopIcon == None) then
+        if (DesktopIcon == None and (not isAlreadyInstalled())) then
             DesktopIcon = confirm(AppName, "Do you want to add an icon on the desktop?", "yesno")
+        else
+            DesktopIcon = True
         end
 
         if (DesktopIcon) then
@@ -238,13 +242,15 @@ function main() do
         # Sauvegarde des fichiers/dossiers à supprimer lors de la désinstallation
         saveUninsDat(created_paths)
 
-        alert(AppName, AppName + " was successfully installed!", "Finish")
+        alert(AppName, message2, "Finish")
     end
 
     deletePath(TEMP_FOLDER)
 end
 
-
-main()
-
+try
+    main()
+except () do
+    alert(AppName, "There was an unexpected error during installation", "Quit")
+end
 
